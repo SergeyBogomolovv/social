@@ -8,7 +8,7 @@ import (
 type User struct {
 	ID        int64     `json:"id" db:"user_id"`
 	Username  string    `json:"username" db:"username"`
-	Password  []byte    `json:"-" db:"password"`
+	Password  string    `json:"-" db:"password"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
@@ -18,6 +18,12 @@ func (u *User) ToProto() *proto.User {
 		Username:  u.Username,
 		CreatedAt: u.CreatedAt.Unix(),
 	}
+}
+
+type UserPayload struct {
+	ID        int64     `json:"id"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Post struct {

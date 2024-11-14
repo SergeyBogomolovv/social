@@ -17,6 +17,14 @@ run-users: build-users
 run-posts: build-posts
 	@./bin/posts
 
+.PHONY: build-http
+build-http:
+	@go build -o bin/http cmd/http/main.go
+
+.PHONY: run-http
+run-http: build-http
+	@./bin/http
+
 .PHONY: gen-proto
 gen-proto:
 	@protoc --proto_path=pkg/proto \

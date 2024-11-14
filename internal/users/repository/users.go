@@ -30,7 +30,7 @@ func (r *usersRepository) GetIsExists(ctx context.Context, username string) (boo
 func (r *usersRepository) GetMany(ctx context.Context, page int32, limit int32) ([]*models.User, error) {
 	query := `SELECT * FROM users LIMIT $1 OFFSET $2`
 	users := make([]*models.User, 0)
-	err := r.db.SelectContext(ctx, &users, query, limit, page)
+	err := r.db.SelectContext(ctx, &users, query, limit, page*limit-limit)
 	if err != nil {
 		return nil, err
 	}

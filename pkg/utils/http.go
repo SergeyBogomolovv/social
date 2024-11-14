@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func ParseJSON(r *http.Request, payload any) error {
@@ -17,4 +18,27 @@ func WriteJSON(w http.ResponseWriter, status int, payload any) error {
 
 func WriteError(w http.ResponseWriter, status int, err error) {
 	WriteJSON(w, status, map[string]string{"error": err.Error()})
+}
+
+func GetIntQuery(param string, placeHolder int, r *http.Request) int {
+	if r.URL.Query().Has(param) {
+		param := r.URL.Query().Get(param)
+		num, err := strconv.Atoi(param)
+		if err == nil {
+			return num
+		}
+	}
+
+	return placeHolder
+}
+
+func GetIntParam(param string, r *http.Request) (int, error) {
+	val := r.PathValue(param)
+	num, err := strconv.Atoi(val)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return num, nil
 }
