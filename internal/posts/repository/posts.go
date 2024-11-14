@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"social/pkg/constants"
 	"social/pkg/models"
 
 	"github.com/jmoiron/sqlx"
@@ -25,10 +27,14 @@ func (r *postsRepository) GetById(ctx context.Context, id int64) (*models.Post, 
 	query := `SELECT * FROM users WHERE post_id = $1`
 	post := new(models.Post)
 	err := r.db.GetContext(ctx, post, query, id)
-	if err != nil {
+	switch err {
+	case sql.ErrNoRows:
+		return nil, constants.ErrPostNotFound
+	case nil:
+		return post, nil
+	default:
 		return nil, err
 	}
-	return post, nil
 }
 
 func (r *postsRepository) Create(ctx context.Context, dto models.CreatePostDto) (*models.Post, error) {
@@ -45,20 +51,28 @@ func (r *postsRepository) Update(ctx context.Context, dto models.UpdatePostDto) 
 	query := `UPDATE posts SET title = $1, content = $2 WHERE post_id = $3 RETURNING *`
 	post := new(models.Post)
 	err := r.db.GetContext(ctx, post, query, dto.Title, dto.Content, dto.ID)
-	if err != nil {
+	switch err {
+	case sql.ErrNoRows:
+		return nil, constants.ErrPostNotFound
+	case nil:
+		return post, nil
+	default:
 		return nil, err
 	}
-	return post, nil
 }
 
 func (r *postsRepository) Delete(ctx context.Context, id int64) (*models.Post, error) {
 	query := `DELETE FROM posts WHERE post_id = $1 RETURNING *`
 	post := new(models.Post)
 	err := r.db.GetContext(ctx, post, query, id)
-	if err != nil {
+	switch err {
+	case sql.ErrNoRows:
+		return nil, constants.ErrPostNotFound
+	case nil:
+		return post, nil
+	default:
 		return nil, err
 	}
-	return post, nil
 }
 
 func NewPostsRepository(db *sqlx.DB) *postsRepository {
