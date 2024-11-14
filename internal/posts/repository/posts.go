@@ -16,7 +16,7 @@ type postsRepository struct {
 func (r *postsRepository) GetMany(ctx context.Context, page int32, limit int32) ([]*models.Post, error) {
 	query := `SELECT * FROM posts LIMIT $1 OFFSET $2`
 	posts := make([]*models.Post, 0)
-	err := r.db.SelectContext(ctx, &posts, query, limit, page)
+	err := r.db.SelectContext(ctx, &posts, query, limit, page*limit-limit)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func (r *postsRepository) GetMany(ctx context.Context, page int32, limit int32) 
 }
 
 func (r *postsRepository) GetById(ctx context.Context, id int64) (*models.Post, error) {
-	query := `SELECT * FROM users WHERE post_id = $1`
+	query := `SELECT * FROM posts WHERE post_id = $1`
 	post := new(models.Post)
 	err := r.db.GetContext(ctx, post, query, id)
 	switch err {

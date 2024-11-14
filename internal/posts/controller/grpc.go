@@ -65,8 +65,8 @@ func (c *postsContoller) GetPosts(ctx context.Context, req *proto.GetPostsReques
 
 	mapped := make([]*proto.Post, len(posts))
 
-	for _, post := range posts {
-		mapped = append(mapped, post.ToProto())
+	for i, post := range posts {
+		mapped[i] = post.ToProto()
 	}
 
 	return &proto.GetPostsResponse{

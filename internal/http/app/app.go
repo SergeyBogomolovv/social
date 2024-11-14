@@ -19,6 +19,9 @@ func (a *App) Run() error {
 	usersUsecase := usecase.NewUsersUsecase(a.usersClient)
 	controller.RegisterUsersController(router, usersUsecase)
 
+	postsUsecase := usecase.NewPostsUsecase(a.postsClient)
+	controller.RegisterPostsController(router, postsUsecase)
+
 	server := &http.Server{
 		Addr:    a.addr,
 		Handler: router,
