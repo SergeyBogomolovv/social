@@ -1,6 +1,22 @@
 include .env
 MIGRATIONS_PATH = cmd/migrations
 
+.PHONY: build-posts
+build-posts:
+	@go build -o bin/posts cmd/posts/main.go
+
+.PHONY: build-users
+build-users:
+	@go build -o bin/users cmd/users/main.go
+
+.PHONY: run-users
+run-users: build-users
+	@./bin/users
+
+.PHONY: run-posts
+run-posts: build-posts
+	@./bin/posts
+
 .PHONY: gen-proto
 gen-proto:
 	@protoc --proto_path=pkg/proto \

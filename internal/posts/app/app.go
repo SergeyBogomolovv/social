@@ -3,6 +3,9 @@ package app
 import (
 	"log/slog"
 	"net"
+	"social/internal/posts/controller"
+	"social/internal/posts/repository"
+	"social/internal/posts/usecase"
 
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
@@ -20,6 +23,9 @@ func (a *App) Run() error {
 		slog.Error("failed to listen", "error", err)
 		return err
 	}
+	repo := repository.NewPostsRepository(a.db)
+	usecase := usecase.NewPostsUsecase(repo)
+	controller.RegisterPostsController(a.grpc, usecase)
 
 	slog.Info("Starting gRPC server", "address", a.addr)
 	return a.grpc.Serve(listener)

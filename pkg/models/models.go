@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	proto "social/pkg/proto/generated"
+	"time"
+)
 
 type User struct {
 	ID        int64     `json:"id" db:"user_id"`
@@ -9,12 +12,30 @@ type User struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
+func (u *User) ToProto() *proto.User {
+	return &proto.User{
+		Id:        u.ID,
+		Username:  u.Username,
+		CreatedAt: u.CreatedAt.Unix(),
+	}
+}
+
 type Post struct {
 	ID        int64     `json:"id" db:"post_id"`
 	AuthorID  int64     `json:"author_id" db:"author_id"`
 	Title     string    `json:"title" db:"title"`
 	Content   string    `json:"content" db:"content"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+func (p *Post) ToProto() *proto.Post {
+	return &proto.Post{
+		Id:        p.ID,
+		AuthorId:  p.AuthorID,
+		Title:     p.Title,
+		Content:   p.Content,
+		CreatedAt: p.CreatedAt.Unix(),
+	}
 }
 
 type CreatePostDto struct {
