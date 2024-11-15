@@ -7,6 +7,8 @@ import (
 	"social/pkg/utils"
 
 	"github.com/go-playground/validator/v10"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type UserUsecase interface {
@@ -50,7 +52,12 @@ func (c *usersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.usecase.CreateUser(r.Context(), dto)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.AlreadyExists:
+			utils.WriteError(w, http.StatusConflict, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -65,7 +72,12 @@ func (c *usersController) GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := c.usecase.GetUser(r.Context(), int64(id))
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -86,7 +98,14 @@ func (c *usersController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.usecase.UpdateUser(r.Context(), dto)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		case codes.AlreadyExists:
+			utils.WriteError(w, http.StatusConflict, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -101,7 +120,12 @@ func (c *usersController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := c.usecase.DeleteUser(r.Context(), int64(id))
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 

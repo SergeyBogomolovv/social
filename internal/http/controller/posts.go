@@ -7,6 +7,8 @@ import (
 	"social/pkg/utils"
 
 	"github.com/go-playground/validator/v10"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type PostUsecase interface {
@@ -52,7 +54,12 @@ func (c *postsController) GetPost(w http.ResponseWriter, r *http.Request) {
 	}
 	post, err := c.usecase.GetPost(r.Context(), int64(id))
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -86,7 +93,12 @@ func (c *postsController) UpdatePost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := c.usecase.UpdatePost(r.Context(), dto)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -101,7 +113,12 @@ func (c *postsController) DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 	post, err := c.usecase.DeletePost(r.Context(), int64(id))
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		switch status.Code(err) {
+		case codes.NotFound:
+			utils.WriteError(w, http.StatusNotFound, err)
+		default:
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
